@@ -1,6 +1,9 @@
 from tkinter import Tk
 import Intro
 import Bookmark
+import requests
+import xml.etree.ElementTree as ET
+
 def main():
     root = Tk()
     scene_stack = []

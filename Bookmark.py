@@ -1,22 +1,49 @@
 from tkinter import messagebox
 
 from stdafx import *
+from tkhtmlview import HTMLLabel
+import googlemaps
+from PIL import Image, ImageTk
+import requests
+from io import BytesIO
 
 class BookmarkWindow:
-    def __init__(self, master, scene_stack):
+    def __init__(self, master, scene_stack, bookmarks):
         self.master = master
         self.scene_stack = scene_stack
         self.master.title('Bookmark')
         self.master.geometry('1000x900')
+        self.bookmarks = bookmarks
+
+        Google_API_Key = 'AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE'
+        self.gmaps = googlemaps.Client(key=Google_API_Key)
+
+        # 인천국제공항 지도 설정
+        self.departure_airport = self.gmaps.geocode("인천국제공항")[0]['geometry']['location']
+        self.departure_airport_map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={self.departure_airport['lat']},{self.departure_airport['lng']}&zoom=11&size=450x550&maptype=roadmap&key={Google_API_Key}"
+
+        # 도쿄 지도 설정 (예시)
+        self.arrive_airport = self.gmaps.geocode("제주 공항")[0]['geometry']['location']
+        self.arrive_airport_map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={self.arrive_airport['lat']},{self.arrive_airport['lng']}&zoom=11&size=450x550&maptype=roadmap&key={Google_API_Key}"
+
+
 
         self.listbox_x, self.listbox_y = 50, 200
         self.scrollbar = Scrollbar(self.master)
         self.scrollbar.place(x=self.listbox_x + 880, y=self.listbox_y, height=550)
 
-        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 20))
+        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 14))
         self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=880, height=550)
 
+        self.populate_listbox()
         self.scrollbar.config(command=self.listbox.yview)
+
+        # 지도 표시를 위한 이미지 생성
+        self.map_image1 = self.get_map_image(self.departure_airport_map_url)
+        self.map_label1 = Label(self.master, image=self.map_image1)
+
+        self.map_image2 = self.get_map_image(self.arrive_airport_map_url)
+        self.map_label2 = Label(self.master, image=self.map_image2)
 
         # 지도 버튼 추가
         self.map_button_image = PhotoImage(file="image/map.png")
@@ -46,6 +73,33 @@ class BookmarkWindow:
         self.back_button_image = PhotoImage(file="image/back.png")
         self.back_button = Button(self.master, image=self.back_button_image, width=50, height=50, command=self.go_back)
         self.back_button.place(x=50, y=800)
+
+    def get_map_image(self, url):
+        try:
+            response = requests.get(url)
+            image_data = response.content
+            image = Image.open(BytesIO(image_data))
+            photo = ImageTk.PhotoImage(image)
+            return photo
+        except Exception as e:
+            print("An error occurred while fetching the map image:", e)
+            return None
+
+    def show_map(self):
+        self.map_label1.place(x=self.listbox_x, y=self.listbox_y)
+        self.map_label2.place(x=self.listbox_x + 450, y=self.listbox_y)
+
+    def populate_listbox(self):
+        self.listbox.delete(0, END)  # Listbox 초기화
+        for bookmark in self.bookmarks:
+            display_text = (
+                f"Time: {bookmark['schedule_time']}, "
+                f"항공사: {bookmark['airline']}, "
+                f"Airport: {bookmark['airport']}, "
+                f"Gate: {bookmark['gatenumber']}, "
+                f"Check-in: {bookmark['chkinrange']}"
+            )
+            self.listbox.insert(END, display_text)
 
     def clear_window(self):
         for widget in self.master.winfo_children():
