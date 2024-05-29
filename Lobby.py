@@ -1,6 +1,6 @@
-import Intro
 from stdafx import *
-from Intro import *
+from Bookmark import BookmarkWindow
+
 
 class LobbyWindow:
     def __init__(self, master, scene_stack):
@@ -23,7 +23,6 @@ class LobbyWindow:
         self.arrive_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=10)
         self.arrive_entry.place(x=400, y=150)
 
-
         self.listbox_x, self.listbox_y = 50, 200
         self.scrollbar = Scrollbar(self.master)
         self.scrollbar.place(x=self.listbox_x + 880, y=self.listbox_y, height=550)
@@ -33,7 +32,6 @@ class LobbyWindow:
         self.scrollbar.config(command=self.listbox.yview)
         self.listbox.insert(0, '18:00                                    제주 -> 인천')  # '인천' 텍스트 입력
         self.listbox.insert(1, '20:00')  # '인천' 텍스트 입력
-
 
         # 라디오 버튼 추가
         # 선택된 라디오 버튼의 값을 저장할 변수
@@ -49,24 +47,29 @@ class LobbyWindow:
 
         # 뒤로가기 버튼 추가
         self.back_button_image = PhotoImage(file="image/back.png")
-        self.back_button = Button(self.master, image=self.back_button_image, text="뒤로가기", font=("Arial", 16), width=50, height=50
+        self.back_button = Button(self.master, image=self.back_button_image, font=("Arial", 16), width=50,
+                                  height=50
                                   , command=self.go_back)
         self.back_button.place(x=50, y=800)
 
         # 검색 버튼 추가
         self.search_button_image = PhotoImage(file="image/search.png")
-        self.search_button = Button(self.master, image=self.search_button_image, text="뒤로가기", font=("Arial", 16), width=50,
-                                  height=50)
+        self.search_button = Button(self.master, image=self.search_button_image, font=("Arial", 16),
+                                    width=50, height=50, command=self.search)
         self.search_button.place(x=750, y=130)
 
         # 즐겨찾기 버튼 추가
-        self.star_button_image = PhotoImage(file="image/star.png")
-        self.star_button = Button(self.master, image=self.star_button_image, text="뒤로가기", font=("Arial", 16), width=50,
-                                    height=50)
+        self.star_button_image = PhotoImage(file="image/bookmark.png")
+        self.star_button = Button(self.master, image=self.star_button_image, font=("Arial", 16), width=50,
+                                  height=50, command=self.addbookmark)
         self.star_button.place(x=820, y=130)
 
+        # 즐겨찾기 리스트로 가는 버튼 추가
+        self.book_button_image = PhotoImage(file="image/star.png")
+        self.book_button = Button(self.master, image=self.book_button_image, font=("Arial", 16), width=50,
+                                  height=50, command=self.go_bookmark)
+        self.book_button.place(x=900, y=800)
 
-        self.master.mainloop()
         # 라디오 버튼 콜백 함수
 
     def clear_window(self):
@@ -77,6 +80,20 @@ class LobbyWindow:
         self.clear_window()
         previous_scene = self.scene_stack.pop()
         previous_scene.__init__(self.master, self.scene_stack)
+
+    def go_bookmark(self):
+        self.scene_stack.append(self)
+        self.clear_window()
+        BookmarkWindow(self.master, self.scene_stack)
+
+    def search(self):
+        # 검색 버튼 누르면 리스트 박스에 뜨게 하는 코드 작성
+        pass
+
+    def addbookmark(self):
+        # 북마크 버튼 누르면 즐겨찾기 리스트에 추가하는 코드 작성
+        pass
+
     def on_radio_button1_selected(self):
         self.clear_entries()
         self.arrive_entry.insert(0, '인천')  # '인천' 텍스트 입력
@@ -90,4 +107,3 @@ class LobbyWindow:
         self.start_entry.delete(0, END)
         self.arrive_entry.delete(0, END)
 
-    # 라디오 버튼 생성

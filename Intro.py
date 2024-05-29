@@ -4,17 +4,6 @@ from PIL import Image, ImageTk, ImageSequence
 import Lobby
 from Lobby import *
 class IntroWindow:
-    def clear_window(self):
-        for widget in self.master.winfo_children():
-            widget.destroy()
-
-    def LobbyWindow(self):
-        self.stop_animation()
-        self.scene_stack.append(self)
-        self.clear_window()
-        LobbyWindow(self.master, self.scene_stack)
-
-
     def __init__(self, master, scene_stack):
         self.master = master
         self.scene_stack = scene_stack
@@ -42,9 +31,8 @@ class IntroWindow:
 
         # 시작 버튼 추가
         self.start_button_lobby = Button(self.master, text="Press Button for Start", font=("Arial", 16),
-                                         command=self.LobbyWindow)
+                                         command=self.go_lobby)
         self.start_button_lobby.place(x=400, y=800)
-
 
     def animate(self, counter):
         frame = self.frames[counter]
@@ -57,5 +45,16 @@ class IntroWindow:
 
     def stop_animation(self):
         self.master.after_cancel(self.animation_id)
+
+
+    def clear_window(self):
+        for widget in self.master.winfo_children():
+            widget.destroy()
+
+    def go_lobby(self):
+        self.stop_animation()
+        self.scene_stack.append(self)
+        self.clear_window()
+        LobbyWindow(self.master, self.scene_stack)
 
 
