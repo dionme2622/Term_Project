@@ -9,6 +9,7 @@ from io import BytesIO
 
 class BookmarkWindow:
     def __init__(self, master, scene_stack, bookmarks):
+        global Google_API_Key
         self.master = master
         self.scene_stack = scene_stack
         self.master.title('Bookmark')
@@ -21,12 +22,6 @@ class BookmarkWindow:
         # 인천국제공항 지도 설정
         self.departure_airport = self.gmaps.geocode("인천국제공항")[0]['geometry']['location']
         self.departure_airport_map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={self.departure_airport['lat']},{self.departure_airport['lng']}&zoom=11&size=450x550&maptype=roadmap&key={Google_API_Key}"
-
-        # 도쿄 지도 설정 (예시)
-        self.arrive_airport = self.gmaps.geocode("제주 공항")[0]['geometry']['location']
-        self.arrive_airport_map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={self.arrive_airport['lat']},{self.arrive_airport['lng']}&zoom=11&size=450x550&maptype=roadmap&key={Google_API_Key}"
-
-
 
         self.listbox_x, self.listbox_y = 50, 200
         self.scrollbar = Scrollbar(self.master)
@@ -42,13 +37,13 @@ class BookmarkWindow:
         self.map_image1 = self.get_map_image(self.departure_airport_map_url)
         self.map_label1 = Label(self.master, image=self.map_image1)
 
-        self.map_image2 = self.get_map_image(self.arrive_airport_map_url)
-        self.map_label2 = Label(self.master, image=self.map_image2)
+        self.map_image2 = None
+        self.map_label2 = Label(self.master)
 
         # 지도 버튼 추가
         self.map_button_image = PhotoImage(file="image/map.png")
         self.map_button = Button(self.master, image=self.map_button_image, width=50, height=50,
-                                 command=self.go_map)
+                                 command=self.show_map)
         self.map_button.place(x=720, y=130)
 
         # 이메일 버튼 추가
@@ -86,18 +81,47 @@ class BookmarkWindow:
             return None
 
     def show_map(self):
+        selected_airport = self.get_selected_airport()
+        if not selected_airport:
+            messagebox.showwarning("Warning", "No item selected to show map.")
+            return
+
+        self.arrive_airport = self.gmaps.geocode(selected_airport)[0]['geometry']['location']
+        self.arrive_airport_map_url = (f"https://maps.googleapis.com/maps/api/staticmap?center={self.arrive_airport['lat']},"
+                                       f"{self.arrive_airport['lng']}&zoom=11&size=450x550&maptype=roadmap&key={Google_API_Key}")
+
+        self.map_image2 = self.get_map_image(self.arrive_airport_map_url)
+        self.map_label2.config(image=self.map_image2)
+
         self.map_label1.place(x=self.listbox_x, y=self.listbox_y)
         self.map_label2.place(x=self.listbox_x + 450, y=self.listbox_y)
+
+    def get_selected_airport(self):
+        try:
+            selected_index = self.listbox.curselection()[0]
+            selected_text = self.listbox.get(selected_index)
+            for bookmark in self.bookmarks:
+                display_text = (
+                    f"Time: {bookmark['scheduleDateTime']}, "
+                    f"항공사: {bookmark['airline']}, "
+                    f"Airport: {bookmark['airport']}, "
+                    f"Gate: {bookmark['gatenumber']}, "
+                    f"terminal: {bookmark['terminalid']}"
+                )
+                if selected_text == display_text:
+                    return bookmark['airport']
+        except IndexError:
+            return None
 
     def populate_listbox(self):
         self.listbox.delete(0, END)  # Listbox 초기화
         for bookmark in self.bookmarks:
             display_text = (
-                f"Time: {bookmark['schedule_time']}, "
+                f"Time: {bookmark['scheduleDateTime']}, "
                 f"항공사: {bookmark['airline']}, "
                 f"Airport: {bookmark['airport']}, "
                 f"Gate: {bookmark['gatenumber']}, "
-                f"Check-in: {bookmark['chkinrange']}"
+                f"terminal: {bookmark['terminalid']}"
             )
             self.listbox.insert(END, display_text)
 
@@ -109,10 +133,6 @@ class BookmarkWindow:
         self.clear_window()
         previous_scene = self.scene_stack.pop()
         previous_scene.__init__(self.master, self.scene_stack)
-
-
-    def go_map(self):
-        pass
 
     def go_email(self):
         pass
@@ -126,6 +146,8 @@ class BookmarkWindow:
             selected_index = self.listbox.curselection()[0]
             # 선택된 항목 삭제
             self.listbox.delete(selected_index)
+            # bookmarks 리스트에서 해당 항목 삭제
+            del self.bookmarks[selected_index]
         except IndexError:
             # 항목이 선택되지 않았을 때 메시지 박스 표시
             messagebox.showwarning("Warning", "No item selected to delete.")

@@ -3,6 +3,10 @@ import xml.etree.ElementTree as ET
 import tkinter as tk
 from tkinter import font, Label, Entry, Listbox, Scrollbar, Radiobutton, Button, PhotoImage, StringVar, END, messagebox
 from Bookmark import BookmarkWindow
+
+bookmarks = []  # 즐겨찾기 리스트 초기화
+
+
 class LobbyWindow:
     def __init__(self, master, scene_stack):
         self.master = master
@@ -11,7 +15,6 @@ class LobbyWindow:
         self.master.geometry('1000x900')
         self.url = 'https://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp/getPassengerDeparturesOdp'
         self.service_key = "NG9lJeYMK4rXHUM/L63r5DZpbjjaAm2oddIgbEGnsGsiuWnqb/3BCqaEbBzlGDdyfbncB4XHj4Joe+xGMQHZgQ=="
-        self.bookmarks = []  # 즐겨찾기 리스트 초기화
 
         # 출발지, 도착지 Label
         self.TempFont = font.Font(size=22, weight='bold', family='Consolas')
@@ -82,7 +85,7 @@ class LobbyWindow:
     def go_bookmark(self):
         self.scene_stack.append(self)
         self.clear_window()
-        BookmarkWindow(self.master, self.scene_stack, self.bookmarks)
+        BookmarkWindow(self.master, self.scene_stack, bookmarks)
 
     def search(self):
         if self.selected_option.get() == "Option 1":
@@ -91,7 +94,7 @@ class LobbyWindow:
             self.airport = self.arrive_entry.get()
         queryParams = {
             'serviceKey': self.service_key,
-            'airport': self.airport,
+            'airport_code': self.airport,
             'type': 'xml'
         }
 
@@ -108,24 +111,24 @@ class LobbyWindow:
             self.data = []  # 여기서 data를 인스턴스 변수로 저장
             for item in root.iter('item'):
                 schedule_time = item.findtext('scheduleDateTime')
-                if schedule_time and len(schedule_time) == 4:  # "HHMM" 형식인지 확인
-                    schedule_time = f"{schedule_time[:2]}:{schedule_time[2:]}"  # "HH:MM" 형식으로 변환
+                if schedule_time and len(schedule_time) == 12:  # "YYYYMMDDHHMM" 형식인지 확인
+                    schedule_time = f"{schedule_time[:4]}.{schedule_time[4:6]}.{schedule_time[6:8]} {schedule_time[8:10]}:{schedule_time[10:12]}"  # "YYYY.MM.DD HH:MM" 형식으로 변환
                 airline = item.findtext('airline')
                 airport = item.findtext('airport')
                 gatenumber = item.findtext('gatenumber')
-                chkinrange = item.findtext('chkinrange')
+                terminalid = item.findtext('terminalid')
                 self.data.append({
-                    'schedule_time': schedule_time,
+                    'scheduleDateTime': schedule_time,
                     'airline': airline,
                     'airport': airport,
                     'gatenumber': gatenumber,
-                    'chkinrange': chkinrange
+                    'terminalid': terminalid
                 })
 
             if self.data:
                 for entry in self.data:
                     self.listbox.insert(END,
-                                        f"Time: {entry['schedule_time']}, 항공사: {entry['airline']}, Airport: {entry['airport']}")
+                                        f"Time: {entry['scheduleDateTime']}, 항공사: {entry['airline']}, Airport: {entry['airport']}")
             else:
                 self.listbox.insert(END, "No data available")
         else:
@@ -138,8 +141,8 @@ class LobbyWindow:
                 item = self.listbox.get(index)
                 # data dictionary에서 항목을 찾아서 저장
                 for entry in self.data:
-                    if f"Time: {entry['schedule_time']}, 항공사: {entry['airline']}, Airport: {entry['airport']}" == item:
-                        self.bookmarks.append(entry)
+                    if f"Time: {entry['scheduleDateTime']}, 항공사: {entry['airline']}, Airport: {entry['airport']}" == item:
+                        bookmarks.append(entry)
                         break
             messagebox.showinfo("Success", "Selected item(s) added to bookmarks.")
         else:
@@ -148,12 +151,12 @@ class LobbyWindow:
     def on_radio_button1_selected(self):
         self.clear_entries()
         self.arrive_entry.insert(0, '인천')
-        self.url = 'http://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp/getPassengerDeparturesOdp'
+        self.url = 'http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDSOdp/getPassengerDeparturesDSOdp'
 
     def on_radio_button2_selected(self):
         self.clear_entries()
         self.start_entry.insert(0, '인천')
-        self.url = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp/getPassengerArrivalsOdp"
+        self.url = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDSOdp/getPassengerArrivalsDSOdp"
 
     def clear_entries(self):
         self.start_entry.delete(0, END)
