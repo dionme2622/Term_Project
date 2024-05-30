@@ -105,7 +105,7 @@ class BookmarkWindow:
                     f"Time: {bookmark['scheduleDateTime']}, "
                     f"항공사: {bookmark['airline']}, "
                     f"Airport: {bookmark['airport']}, "
-                    f"Gate: {bookmark['gatenumber']}, "
+                    f"GATE: {bookmark['gatenumber']}, "
                     f"terminal: {bookmark['terminalid']}"
                 )
                 if selected_text == display_text:
@@ -120,7 +120,7 @@ class BookmarkWindow:
                 f"Time: {bookmark['scheduleDateTime']}, "
                 f"항공사: {bookmark['airline']}, "
                 f"Airport: {bookmark['airport']}, "
-                f"Gate: {bookmark['gatenumber']}, "
+                f"GATE: {bookmark['gatenumber']}, "
                 f"terminal: {bookmark['terminalid']}"
             )
             self.listbox.insert(END, display_text)
