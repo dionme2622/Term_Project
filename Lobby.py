@@ -108,11 +108,16 @@ class LobbyWindow:
 
         if response.status_code == 200:
             root = ET.fromstring(response.content)
+            seen_schedule_times = set()  # 중복된 schedule_time을 체크하기 위한 set
             self.data = []  # 여기서 data를 인스턴스 변수로 저장
             for item in root.iter('item'):
                 schedule_time = item.findtext('scheduleDateTime')
                 if schedule_time and len(schedule_time) == 12:  # "YYYYMMDDHHMM" 형식인지 확인
                     schedule_time = f"{schedule_time[:4]}.{schedule_time[4:6]}.{schedule_time[6:8]} {schedule_time[8:10]}:{schedule_time[10:12]}"  # "YYYY.MM.DD HH:MM" 형식으로 변환
+                if schedule_time in seen_schedule_times:
+                    continue  # 이미 본 schedule_time이면 건너뜀
+                seen_schedule_times.add(schedule_time)
+
                 airline = item.findtext('airline')
                 airport = item.findtext('airport')
                 gatenumber = item.findtext('gatenumber')
