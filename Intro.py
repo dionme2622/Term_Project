@@ -4,7 +4,7 @@ from PIL import Image, ImageTk, ImageSequence
 import Lobby
 from Lobby import *
 class IntroWindow:
-    def __init__(self, master, scene_stack):
+    def __init__(self, master, scene_stack, bookmarks):
         self.master = master
         self.scene_stack = scene_stack
         self.master.title('Term_Project')
@@ -55,6 +55,6 @@ class IntroWindow:
         self.stop_animation()
         self.scene_stack.append(self)
         self.clear_window()
-        LobbyWindow(self.master, self.scene_stack)
+        LobbyWindow(self.master, self.scene_stack, bookmarks)
 
 

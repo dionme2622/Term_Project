@@ -8,7 +8,7 @@ bookmarks = []  # 즐겨찾기 리스트 초기화
 
 
 class LobbyWindow:
-    def __init__(self, master, scene_stack):
+    def __init__(self, master, scene_stack, bookmarks):
         self.master = master
         self.scene_stack = scene_stack
         self.master.title('Lobby')
@@ -80,7 +80,7 @@ class LobbyWindow:
     def go_back(self):
         self.clear_window()
         previous_scene = self.scene_stack.pop()
-        previous_scene.__init__(self.master, self.scene_stack)
+        previous_scene.__init__(self.master, self.scene_stack, bookmarks)
 
     def go_bookmark(self):
         self.scene_stack.append(self)

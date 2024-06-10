@@ -1,5 +1,6 @@
 from tkinter import messagebox
 
+from Alarm import AlarmWindow
 from stdafx import *
 from tkhtmlview import HTMLLabel
 import googlemaps
@@ -132,13 +133,15 @@ class BookmarkWindow:
     def go_back(self):
         self.clear_window()
         previous_scene = self.scene_stack.pop()
-        previous_scene.__init__(self.master, self.scene_stack)
+        previous_scene.__init__(self.master, self.scene_stack, self.bookmarks)
 
     def go_email(self):
         pass
 
     def go_alarm(self):
-        pass
+        self.scene_stack.append(self)
+        self.clear_window()
+        AlarmWindow(self.master, self.scene_stack, self.bookmarks)
 
     def removebook(self):
         try:
