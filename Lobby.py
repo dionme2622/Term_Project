@@ -16,6 +16,10 @@ class LobbyWindow:
         self.url = 'https://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp/getPassengerDeparturesOdp'
         self.service_key = "NG9lJeYMK4rXHUM/L63r5DZpbjjaAm2oddIgbEGnsGsiuWnqb/3BCqaEbBzlGDdyfbncB4XHj4Joe+xGMQHZgQ=="
 
+        # 텔레그램 봇 API 토큰과 채팅 ID 설정
+        self.telegram_token = '7311459647:AAEuYSO5db6oU5nUujRcWrR5bT5mUJ2JUdA'
+        self.chat_id = '7306619402'
+
         # 출발지, 도착지 Label
         self.TempFont = font.Font(size=22, weight='bold', family='Consolas')
         self.start_label = Label(self.master, text='출발지', font=self.TempFont)
@@ -72,6 +76,12 @@ class LobbyWindow:
         self.book_button = Button(self.master, image=self.book_button_image, font=("Arial", 16), width=50,
                                   height=50, command=self.go_bookmark)
         self.book_button.place(x=900, y=800)
+
+        # 텔레그램 버튼 추가
+        self.telegram_button_image = PhotoImage(file="image/telegram.png")
+        self.telegram_button = Button(self.master, image=self.telegram_button_image, font=("Arial", 16), width=50,
+                                      height=50, command=self.telegram)
+        self.telegram_button.place(x=890, y=130)
 
     def clear_window(self):
         for widget in self.master.winfo_children():
@@ -167,8 +177,35 @@ class LobbyWindow:
         self.start_entry.delete(0, END)
         self.arrive_entry.delete(0, END)
 
+    def telegram(self):
+        selected_items = self.listbox.curselection()
+        if selected_items:
+            messages = []
+            for index in selected_items:
+                item = self.listbox.get(index)
+                messages.append(item)
+            message_text = "\n".join(messages)
+        else:
+            # 선택된 항목이 없을 때 리스트박스의 모든 항목을 가져옴
+            messages = self.listbox.get(0, END)
+            message_text = "\n".join(messages)
+
+        self.send_telegram_message(message_text)
+
+    def send_telegram_message(self, message):
+        url = f"https://api.telegram.org/bot{self.telegram_token}/sendMessage"
+        payload = {
+            'chat_id': self.chat_id,
+            'text': message
+        }
+        response = requests.post(url, data=payload)
+        if response.status_code == 200:
+            messagebox.showinfo("Success", "Message sent to Telegram successfully!")
+        else:
+            messagebox.showerror("Error", "Failed to send message to Telegram.")
+
 if __name__ == "__main__":
     root = tk.Tk()
     scene_stack = []
-    app = LobbyWindow(root, scene_stack)
+    app = LobbyWindow(root, scene_stack, bookmarks)
     root.mainloop()

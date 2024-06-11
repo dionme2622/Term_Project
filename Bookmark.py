@@ -1,6 +1,7 @@
 from tkinter import messagebox
 
 from Alarm import AlarmWindow
+from Email import EmailWindow
 from stdafx import *
 from tkhtmlview import HTMLLabel
 import googlemaps

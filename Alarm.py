@@ -7,12 +7,16 @@ class AlarmWindow:
     def __init__(self, master, scene_stack, bookmarks):
         self.master = master
         self.scene_stack = scene_stack
-        self.master.title('Lobby')
+        self.master.title('Alarm')
         self.master.geometry('1000x900')
         self.url = 'http://apis.data.go.kr/1262000/CountryBasicService/getCountryBasicList'
         self.url2 = 'http://apis.data.go.kr/1262000/TravelWarningService/getTravelWarningInfo'
         self.service_key = "NG9lJeYMK4rXHUM/L63r5DZpbjjaAm2oddIgbEGnsGsiuWnqb/3BCqaEbBzlGDdyfbncB4XHj4Joe+xGMQHZgQ=="
         self.bookmarks = bookmarks
+        # 텔레그램 봇 API 토큰과 채팅 ID 설정
+        self.telegram_token = '7311459647:AAEuYSO5db6oU5nUujRcWrR5bT5mUJ2JUdA'
+        self.chat_id = '7306619402'
+
         # 멤버 변수 초기화
         self.data = []  # 검색 결과를 저장할 리스트
 
@@ -52,6 +56,12 @@ class AlarmWindow:
                                     width=50, height=50, command=self.search)
         self.search_button.place(x=750, y=130)
 
+        # 텔레그램 버튼 추가
+        self.telegram_button_image = PhotoImage(file="image/telegram.png")
+        self.telegram_button = Button(self.master, image=self.telegram_button_image, font=("Arial", 16),
+                                    width=50, height=50, command=self.telegram)
+        self.telegram_button.place(x=850, y=130)
+
     def clear_window(self):
         for widget in self.master.winfo_children():
             widget.destroy()
@@ -60,6 +70,31 @@ class AlarmWindow:
         self.clear_window()
         previous_scene = self.scene_stack.pop()
         previous_scene.__init__(self.master, self.scene_stack, self.bookmarks)
+
+    def telegram(self):
+        # 캔버스의 텍스트 정보를 추출
+        items = self.canvas.find_all()
+        messages = []
+        for item in items:
+            if self.canvas.type(item) == 'text':
+                messages.append(self.canvas.itemcget(item, 'text'))
+
+        # 텔레그램 메시지로 전송
+        if messages:
+            message_text = "\n".join(messages)
+            self.send_telegram_message(message_text)
+
+    def send_telegram_message(self, message):
+        url = f"https://api.telegram.org/bot{self.telegram_token}/sendMessage"
+        payload = {
+            'chat_id': self.chat_id,
+            'text': message
+        }
+        response = requests.post(url, data=payload)
+        if response.status_code == 200:
+            messagebox.showinfo("Success", "Message sent to Telegram successfully!")
+        else:
+            messagebox.showerror("Error", "Failed to send message to Telegram.")
 
     def search(self):
         self.countryName = self.country_entry.get()
@@ -104,7 +139,7 @@ class AlarmWindow:
                     for item in root2.iter('item'):
                         attentionNote = item.findtext('attentionNote')
                         self.data2.append({'attentionNote': attentionNote})
-                        self.canvas.create_text(10, 10, anchor="nw", text=f"<경보지역>: {attentionNote}",
+                        self.canvas.create_text(10, y_position, anchor="nw", text=f"<경보지역>: {attentionNote}",
                                                 font=("Arial", 12))
                         y_position += 20  # 다음 텍스트의 y 위치를 조정
                 else:
@@ -120,5 +155,5 @@ class AlarmWindow:
 if __name__ == "__main__":
     root = tk.Tk()
     scene_stack = []
-    app = AlarmWindow(root, scene_stack)
+    app = AlarmWindow(root, scene_stack, [])
     root.mainloop()
