@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import tkinter as tk
 from tkinter import font, Label, Entry, Listbox, Scrollbar, Radiobutton, Button, PhotoImage, StringVar, END, messagebox
 from Bookmark import BookmarkWindow
+import spam
 
 bookmarks = []  # 즐겨찾기 리스트 초기화
 
@@ -132,13 +133,9 @@ class LobbyWindow:
                 airport = item.findtext('airport')
                 gatenumber = item.findtext('gatenumber')
                 terminalid = item.findtext('terminalid')
-                self.data.append({
-                    'scheduleDateTime': schedule_time,
-                    'airline': airline,
-                    'airport': airport,
-                    'gatenumber': gatenumber,
-                    'terminalid': terminalid
-                })
+
+                # C++ 모듈 함수를 호출하여 리스트에 사전을 추가
+                spam.add_to_list(self.data, schedule_time, airline, airport, gatenumber, terminalid)
 
             if self.data:
                 for entry in self.data:
