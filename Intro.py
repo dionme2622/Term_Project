@@ -10,7 +10,7 @@ class IntroWindow:
         self.master.title('Term_Project')
         self.master.geometry('600x700')
 
-
+        self.master.configure(bg='lightblue')  # 원하는 배경색으로 변경
 
         # GIF 이미지 로드 및 애니메이션 설정
         self.gif_path = 'image/airplane.gif'  # GIF 이미지 경로 설정
@@ -31,7 +31,7 @@ class IntroWindow:
 
         # 시작 버튼 추가
         self.start_button_lobby = Button(self.master, text="START", font=("Arial", 16),
-                                         command=self.go_lobby)
+                                         command=self.go_lobby, bg='lightblue')
         self.start_button_lobby.place(x=260, y=600)
 
     def animate(self, counter):

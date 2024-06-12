@@ -26,7 +26,7 @@ class AlarmWindow:
 
         # 출발지, 도착지 Label
         self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
-        self.country_label = Label(self.master, text='나라 이름', font=self.TempFont)
+        self.country_label = Label(self.master, text='나라 이름', font=self.TempFont, bg='lightblue')
         self.country_label.place(x=50, y=110)
 
         # Entry 출발지, 도착지
@@ -35,7 +35,7 @@ class AlarmWindow:
 
         # 캔버스 추가
         self.canvas_x, self.canvas_y = 50, 200
-        self.canvas = tk.Canvas(self.master, width=880, height=550, bg="white", scrollregion=(0, 0, 1500, 1500))
+        self.canvas = tk.Canvas(self.master, width=880, height=550, bg='lightblue', scrollregion=(0, 0, 1500, 1500))
         self.canvas.place(x=self.canvas_x, y=self.canvas_y)
 
         # Y축 스크롤바 추가
@@ -74,7 +74,7 @@ class AlarmWindow:
 
         # 이메일 Label
         self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
-        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont)
+        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont, bg='lightblue')
         self.email_label.place(x=230, y=140)
 
         # Entry 이메일

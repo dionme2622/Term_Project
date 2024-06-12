@@ -33,7 +33,7 @@ class BookmarkWindow:
         self.scrollbar = Scrollbar(self.master)
         self.scrollbar.place(x=self.listbox_x + 880, y=self.listbox_y, height=550)
 
-        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 14))
+        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 14), bg='lightblue')
         self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=880, height=550)
 
         self.populate_listbox()
@@ -60,7 +60,7 @@ class BookmarkWindow:
 
         # 이메일 Label
         self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
-        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont)
+        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont, bg='lightblue')
         self.email_label.place(x=230, y=140)
 
         # Entry 이메일

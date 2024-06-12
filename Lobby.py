@@ -26,23 +26,23 @@ class LobbyWindow:
 
         # 출발지, 도착지 Label
         self.TempFont = font.Font(size=22, weight='bold', family='Consolas')
-        self.start_label = Label(self.master, text='출발지', font=self.TempFont)
+        self.start_label = Label(self.master, text='출발지', font=self.TempFont, bg='lightblue')
         self.start_label.place(x=110, y=110)
 
-        self.arrive_label = Label(self.master, text='도착지', font=self.TempFont)
+        self.arrive_label = Label(self.master, text='도착지', font=self.TempFont, bg='lightblue')
         self.arrive_label.place(x=410, y=110)
 
         # Entry 출발지, 도착지
-        self.start_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=10)
+        self.start_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=10, bg='lightblue')
         self.start_entry.place(x=100, y=150)
-        self.arrive_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=10)
+        self.arrive_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=10, bg='lightblue')
         self.arrive_entry.place(x=400, y=150)
 
         self.listbox_x, self.listbox_y = 50, 200
         self.scrollbar = Scrollbar(self.master)
         self.scrollbar.place(x=self.listbox_x + 480, y=self.listbox_y, height=550)
 
-        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 10))
+        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 10), bg='lightblue')
         self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=480, height=550)
         self.scrollbar.config(command=self.listbox.yview)
 
@@ -50,11 +50,11 @@ class LobbyWindow:
         self.selected_option = StringVar(value="Option 1")
         self.on_radio_button1_selected()
         self.radio_button1 = Radiobutton(self.master, text="출발지 -> 인천", value="Option 1",
-                                         variable=self.selected_option, command=self.on_radio_button1_selected)
+                                         variable=self.selected_option, command=self.on_radio_button1_selected, bg='lightblue')
         self.radio_button1.place(x=600, y=100)
 
         self.radio_button2 = Radiobutton(self.master, text="인천 -> 도착지", value="Option 2",
-                                         variable=self.selected_option, command=self.on_radio_button2_selected)
+                                         variable=self.selected_option, command=self.on_radio_button2_selected, bg='lightblue')
         self.radio_button2.place(x=600, y=150)
 
         # 뒤로가기 버튼 추가
@@ -88,7 +88,7 @@ class LobbyWindow:
         self.telegram_button.place(x=890, y=130)
 
         # 그래프를 표시할 캔버스 추가
-        self.canvas = tk.Canvas(self.master, width=360, height=450, bg='white')
+        self.canvas = tk.Canvas(self.master, width=360, height=450, bg='lightblue')
         self.canvas.place(x=self.listbox_x + 520, y=self.listbox_y)
 
     def clear_window(self):
