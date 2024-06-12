@@ -56,12 +56,12 @@ class BookmarkWindow:
         self.email_button_image = PhotoImage(file="image/email.png")
         self.email_button = Button(self.master, image=self.email_button_image, width=50, height=50,
                                    command=self.go_email)
-        self.email_button.place(x=650, y=130)
+        self.email_button.place(x=680, y=130)
 
         # 이메일 Label
         self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
-        self.email_label = Label(self.master, text='보낼 주소 입력:', font=self.TempFont)
-        self.email_label.place(x=200, y=140)
+        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont)
+        self.email_label.place(x=230, y=140)
 
         # Entry 이메일
         self.email_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=20)

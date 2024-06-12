@@ -8,7 +8,7 @@ class IntroWindow:
         self.master = master
         self.scene_stack = scene_stack
         self.master.title('Term_Project')
-        self.master.geometry('1000x900')
+        self.master.geometry('600x700')
 
 
 
@@ -30,9 +30,9 @@ class IntroWindow:
         self.animate(0)
 
         # 시작 버튼 추가
-        self.start_button_lobby = Button(self.master, text="Press Button for Start", font=("Arial", 16),
+        self.start_button_lobby = Button(self.master, text="START", font=("Arial", 16),
                                          command=self.go_lobby)
-        self.start_button_lobby.place(x=400, y=800)
+        self.start_button_lobby.place(x=260, y=600)
 
     def animate(self, counter):
         frame = self.frames[counter]

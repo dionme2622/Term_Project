@@ -25,7 +25,7 @@ class AlarmWindow:
         self.data = []  # 검색 결과를 저장할 리스트
 
         # 출발지, 도착지 Label
-        self.TempFont = font.Font(size=22, weight='bold', family='Consolas')
+        self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
         self.country_label = Label(self.master, text='나라 이름', font=self.TempFont)
         self.country_label.place(x=50, y=110)
 
@@ -58,24 +58,24 @@ class AlarmWindow:
         self.search_button_image = PhotoImage(file="image/search.png")
         self.search_button = Button(self.master, image=self.search_button_image, font=("Arial", 16),
                                     width=50, height=50, command=self.search)
-        self.search_button.place(x=750, y=130)
+        self.search_button.place(x=770, y=130)
 
         # 텔레그램 버튼 추가
         self.telegram_button_image = PhotoImage(file="image/telegram.png")
         self.telegram_button = Button(self.master, image=self.telegram_button_image, font=("Arial", 16),
                                     width=50, height=50, command=self.telegram)
-        self.telegram_button.place(x=850, y=130)
+        self.telegram_button.place(x=870, y=130)
 
         # 이메일 버튼 추가
         self.email_button_image = PhotoImage(file="image/email.png")
         self.email_button = Button(self.master, image=self.email_button_image, width=50, height=50,
                                    command=self.go_email)
-        self.email_button.place(x=650, y=130)
+        self.email_button.place(x=680, y=130)
 
         # 이메일 Label
         self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
-        self.email_label = Label(self.master, text='보낼 주소 입력:', font=self.TempFont)
-        self.email_label.place(x=200, y=140)
+        self.email_label = Label(self.master, text='이메일 입력:', font=self.TempFont)
+        self.email_label.place(x=230, y=140)
 
         # Entry 이메일
         self.email_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=20)

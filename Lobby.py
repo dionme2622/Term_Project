@@ -4,6 +4,9 @@ import tkinter as tk
 from tkinter import font, Label, Entry, Listbox, Scrollbar, Radiobutton, Button, PhotoImage, StringVar, END, messagebox
 from Bookmark import BookmarkWindow
 import spam
+import matplotlib.pyplot as plt
+from collections import Counter
+import matplotlib.font_manager as fm
 
 bookmarks = []  # 즐겨찾기 리스트 초기화
 
@@ -37,10 +40,10 @@ class LobbyWindow:
 
         self.listbox_x, self.listbox_y = 50, 200
         self.scrollbar = Scrollbar(self.master)
-        self.scrollbar.place(x=self.listbox_x + 880, y=self.listbox_y, height=550)
+        self.scrollbar.place(x=self.listbox_x + 480, y=self.listbox_y, height=550)
 
-        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 16))
-        self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=880, height=550)
+        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 10))
+        self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=480, height=550)
         self.scrollbar.config(command=self.listbox.yview)
 
         # 라디오 버튼 추가
@@ -48,11 +51,11 @@ class LobbyWindow:
         self.on_radio_button1_selected()
         self.radio_button1 = Radiobutton(self.master, text="출발지 -> 인천", value="Option 1",
                                          variable=self.selected_option, command=self.on_radio_button1_selected)
-        self.radio_button1.place(x=600, y=50)
+        self.radio_button1.place(x=600, y=100)
 
         self.radio_button2 = Radiobutton(self.master, text="인천 -> 도착지", value="Option 2",
                                          variable=self.selected_option, command=self.on_radio_button2_selected)
-        self.radio_button2.place(x=600, y=100)
+        self.radio_button2.place(x=600, y=150)
 
         # 뒤로가기 버튼 추가
         self.back_button_image = PhotoImage(file="image/back.png")
@@ -84,6 +87,10 @@ class LobbyWindow:
                                       height=50, command=self.telegram)
         self.telegram_button.place(x=890, y=130)
 
+        # 그래프를 표시할 캔버스 추가
+        self.canvas = tk.Canvas(self.master, width=360, height=450, bg='white')
+        self.canvas.place(x=self.listbox_x + 520, y=self.listbox_y)
+
     def clear_window(self):
         for widget in self.master.winfo_children():
             widget.destroy()
@@ -112,7 +119,7 @@ class LobbyWindow:
         response = requests.get(self.url, params=queryParams)
         # Listbox 초기화
         self.listbox.delete(0, END)
-
+        self.canvas.delete("all")  # 그래프 초기화
         if self.airport == '':
             messagebox.showinfo('error', 'code를 입력하시오')
             return
@@ -121,6 +128,7 @@ class LobbyWindow:
             root = ET.fromstring(response.content)
             seen_schedule_times = set()  # 중복된 schedule_time을 체크하기 위한 set
             self.data = []  # 여기서 data를 인스턴스 변수로 저장
+            airline_counter = Counter()
             for item in root.iter('item'):
                 schedule_time = item.findtext('scheduleDateTime')
                 if schedule_time and len(schedule_time) == 12:  # "YYYYMMDDHHMM" 형식인지 확인
@@ -137,14 +145,36 @@ class LobbyWindow:
                 # C++ 모듈 함수를 호출하여 리스트에 사전을 추가
                 spam.add_to_list(self.data, schedule_time, airline, airport, gatenumber, terminalid)
 
+                airline_counter[airline] += 1
+
             if self.data:
                 for entry in self.data:
                     self.listbox.insert(END,
                                         f"Time: {entry['scheduleDateTime']}, 항공사: {entry['airline']}, Airport: {entry['airport']}")
             else:
                 self.listbox.insert(END, "No data available")
+
+            # 그래프를 그립니다
+            self.plot_airline_counts(airline_counter)
         else:
             messagebox.showerror("Error", f"Error fetching data: {response.status_code}")
+
+    def plot_airline_counts(self, airline_counter):
+        airlines = list(airline_counter.keys())
+        counts = list(airline_counter.values())
+
+        max_count = max(counts)
+        bar_width = 15
+        x_gap = 20
+        x0 = 20
+        y0 = 280
+
+        for i in range(len(airlines)):
+            x1 = x0 + i * (bar_width + x_gap)
+            y1 = y0 - 200 * counts[i] / max_count
+            self.canvas.create_rectangle(x1, y1, x1 + bar_width, y0, fill='blue')
+            self.canvas.create_text(x1 + bar_width / 2, y0 + 100, text=airlines[i], anchor='n', angle=90)
+            self.canvas.create_text(x1 + bar_width / 2, y1 - 10, text=counts[i], anchor='s')
 
     def addbookmark(self):
         selected_items = self.listbox.curselection()
@@ -200,6 +230,7 @@ class LobbyWindow:
             messagebox.showinfo("Success", "Message sent to Telegram successfully!")
         else:
             messagebox.showerror("Error", "Failed to send message to Telegram.")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
