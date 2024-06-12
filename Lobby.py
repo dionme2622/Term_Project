@@ -39,7 +39,7 @@ class LobbyWindow:
         self.scrollbar = Scrollbar(self.master)
         self.scrollbar.place(x=self.listbox_x + 880, y=self.listbox_y, height=550)
 
-        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 14))
+        self.listbox = Listbox(self.master, yscrollcommand=self.scrollbar.set, font=("Arial", 16))
         self.listbox.place(x=self.listbox_x, y=self.listbox_y, width=880, height=550)
         self.scrollbar.config(command=self.listbox.yview)
 

@@ -139,7 +139,7 @@ class AlarmWindow:
                     for item in root2.iter('item'):
                         attentionNote = item.findtext('attentionNote')
                         self.data2.append({'attentionNote': attentionNote})
-                        self.canvas.create_text(10, y_position, anchor="nw", text=f"<경보지역>: {attentionNote}",
+                        self.canvas.create_text(10, 10, anchor="nw", text=f"<경보지역>: {attentionNote}",
                                                 font=("Arial", 12))
                         y_position += 20  # 다음 텍스트의 y 위치를 조정
                 else:
