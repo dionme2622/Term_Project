@@ -9,6 +9,10 @@ from PIL import Image, ImageTk
 import requests
 from io import BytesIO
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 class BookmarkWindow:
     def __init__(self, master, scene_stack, bookmarks):
         global Google_API_Key
@@ -46,13 +50,23 @@ class BookmarkWindow:
         self.map_button_image = PhotoImage(file="image/map.png")
         self.map_button = Button(self.master, image=self.map_button_image, width=50, height=50,
                                  command=self.show_map)
-        self.map_button.place(x=720, y=130)
+        self.map_button.place(x=790, y=130)
 
         # 이메일 버튼 추가
         self.email_button_image = PhotoImage(file="image/email.png")
         self.email_button = Button(self.master, image=self.email_button_image, width=50, height=50,
                                    command=self.go_email)
-        self.email_button.place(x=790, y=130)
+        self.email_button.place(x=650, y=130)
+
+        # 이메일 Label
+        self.TempFont = font.Font(size=18, weight='bold', family='Consolas')
+        self.email_label = Label(self.master, text='보낼 주소 입력:', font=self.TempFont)
+        self.email_label.place(x=200, y=140)
+
+        # Entry 이메일
+        self.email_entry = Entry(self.master, font=("Arial", 16, 'bold'), width=20)
+        self.email_entry.place(x=400, y=140)
+
 
         # 경보 버튼 추가
         self.alarm_button_image = PhotoImage(file="image/alarm.png")
@@ -70,6 +84,49 @@ class BookmarkWindow:
         self.back_button_image = PhotoImage(file="image/back.png")
         self.back_button = Button(self.master, image=self.back_button_image, width=50, height=50, command=self.go_back)
         self.back_button.place(x=50, y=800)
+
+    def send_email(self):
+        recipient_email = self.email_entry.get()
+        if not recipient_email:
+            messagebox.showwarning("Warning", "Please enter an email address.")
+            return
+
+        selected_text = self.get_selected_text()
+        if not selected_text:
+            messagebox.showwarning("Warning", "No item selected to send.")
+            return
+
+        subject = "Selected Bookmark Information"
+        body = selected_text
+
+        try:
+            smtp_server = "smtp.naver.com"
+            smtp_port = 587
+            sender_email = "wolf1323@naver.com"  # 자신의 네이버 이메일 주소
+            sender_password = "smreo0516"  # 자신의 네이버 앱 비밀번호
+
+            msg = MIMEMultipart()
+            msg["From"] = sender_email
+            msg["To"] = recipient_email
+            msg["Subject"] = subject
+            msg.attach(MIMEText(body, "plain"))
+
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, recipient_email, msg.as_string())
+
+            messagebox.showinfo("Info", "Email sent successfully.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def get_selected_text(self):
+        try:
+            selected_index = self.listbox.curselection()[0]
+            return self.listbox.get(selected_index)
+        except IndexError:
+            return None
+
 
     def get_map_image(self, url):
         try:
@@ -108,7 +165,7 @@ class BookmarkWindow:
                     f"항공사: {bookmark['airline']}, "
                     f"Airport: {bookmark['airport']}, "
                     f"GATE: {bookmark['gatenumber']}, "
-                    f"터미널: {bookmark['terminalid']}"
+                    f"terminal: {bookmark['terminalid']}"
                 )
                 if selected_text == display_text:
                     return bookmark['airport']
@@ -123,7 +180,7 @@ class BookmarkWindow:
                 f"항공사: {bookmark['airline']}, "
                 f"Airport: {bookmark['airport']}, "
                 f"GATE: {bookmark['gatenumber']}, "
-                f"터미널: {bookmark['terminalid']}"
+                f"terminal: {bookmark['terminalid']}"
             )
             self.listbox.insert(END, display_text)
 
@@ -137,7 +194,7 @@ class BookmarkWindow:
         previous_scene.__init__(self.master, self.scene_stack, self.bookmarks)
 
     def go_email(self):
-        pass
+        self.send_email()
 
     def go_alarm(self):
         self.scene_stack.append(self)
